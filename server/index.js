@@ -7,6 +7,7 @@ import morgan from 'morgan';
 const app = express();
 import router from './router';
 import mongoose from 'mongoose';
+import cors from 'cors';
 
 //DB Setup
 mongoose.connect("mongodb://localhost:27017/auth",{ useMongoClient: true});
@@ -19,6 +20,7 @@ mongoose.connect("mongodb://localhost:27017/auth",{ useMongoClient: true});
 const port = process.env.PORT || 3090;
 const server = http.createServer(app);
 app.use(morgan('combined'));
+app.use(cors());
 app.use(bodyParser.json());
 router(app);
 server.listen(port);
