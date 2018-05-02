@@ -1,15 +1,28 @@
-import User  from '../models/user';
-import jwt from 'jwt-simple';
-import config from '../config';
+const User  = require('../models/user');
+const jwt = require('jwt-simple');
+const config = require('../config');
+const GetUserDetails = require('../getUserDetails');
 
-function tokenForUser(user){
+
+
+async function tokenForUser(user){
     const timestamp = new Date().getTime();
-    return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
+    return await jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
 }
-exports.signin = (req, res, next) => {
-    res.json({token: tokenForUser(req.user)});
-
+async function signin(req, res, next){
+    res.json({token: await tokenForUser(req.user)});
 }
+exports.signin = signin;
+async function getUserDetails (req, res, next){
+   var s = await tokenForUser(req.user)
+    if(s !== undefined){
+        var resp = GetUserDetails(req, res);
+       console.log('RESP BODY', resp);
+        return resp
+       // return (resp.body == 'undefined' ? resp : resp.body.toJSON());
+    }
+};
+exports.getUserDetails = getUserDetails;
 exports.signup = (req, res, next) => {
    const email = req.body.email;
    const password = req.body.password;
@@ -33,5 +46,6 @@ exports.signup = (req, res, next) => {
     });
    });
     
-} 
+}
+
 
